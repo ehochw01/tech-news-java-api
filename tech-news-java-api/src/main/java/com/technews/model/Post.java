@@ -13,6 +13,7 @@ import java.util.Objects;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "post")
 public class Post implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -24,28 +25,28 @@ public class Post implements Serializable {
     private int voteCount;
     private Integer userId;
 
-    //signals to the Spring Data JPA that this variable is not to be allowed to be null in the database
     @NotNull
-    // allows us to use the type Date in the database and signals to the JPA that these fields will house data of that type.
     @Temporal(TemporalType.DATE)
-    // designates the name of the column for the database
     @Column(name = "posted_at")
     private Date postedAt = new Date();
 
     @NotNull
     @Temporal(TemporalType.DATE)
-    @Column(name = "posted_at")
+    @Column(name = "updated_at")
     private Date updatedAt = new Date();
 
     // Need to use FetchType.LAZY to resolve multiple bags exception
     @OneToMany(mappedBy = "postId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments;
 
-    public Post(Integer id, String title, String postUrl, String userName, int voteCount, Integer userId) {
+
+    public Post() {
+    }
+
+    public Post(Integer id, String title, String postUrl, int voteCount, Integer userId) {
         this.id = id;
         this.title = title;
         this.postUrl = postUrl;
-        this.userName = userName;
         this.voteCount = voteCount;
         this.userId = userId;
     }
@@ -125,7 +126,7 @@ public class Post implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Post)) return false;
         Post post = (Post) o;
         return getVoteCount() == post.getVoteCount() &&
                 Objects.equals(getId(), post.getId()) &&
